@@ -7,6 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
 
+    "prisma:dev:studio": "npx prisma studio",
+
     "prisma:dev:deploy": "npx prisma migrate deploy",
 
     "db:dev:up": "docker compose up dev-db -d",
