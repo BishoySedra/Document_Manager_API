@@ -96,6 +96,7 @@ export class AuthService {
         };
     }
 
+
     // service method to get user profile
     async profile(userInfo: AuthDto.AuthPayload) {
         return userInfo;
