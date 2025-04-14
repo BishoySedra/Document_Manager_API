@@ -6,7 +6,6 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from '@nestjs/config';
 import * as AuthDto from './dto/auth.dto';
 import { AppResponse } from 'src/common/utils/response.util';
-import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -53,46 +52,26 @@ export class AuthService {
         };
     }
 
-
     // service method to login a user
     async login(data: AuthDto.LoginDto) {
-
-        // check if user exists
         const user = await this.prisma.user.findUnique({
-            where: {
-                email: data.email,
-            },
+            where: { email: data.email },
         });
 
-        // if user does not exist, throw exception
-        if (!user) {
+        if (!user || !(await bcrypt.compare(data.password, user.password))) {
             throw new CustomException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         }
 
-        // console.log("here 1");
+        const tokens = await this.generateTokens(user.id, user.email);
+        await this.updateRefreshToken(user.id, tokens.refresh_token);
 
-        // compare password
-        const isPasswordValid = await bcrypt.compare(data.password, user.password);
-
-        // if password is invalid, throw exception
-        if (!isPasswordValid) {
-            throw new CustomException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-        }
-
-        // console.log("here 2");
-
-        // generate JWT token
-        const payload: AuthDto.AuthPayload = {
-            id: user.id,
-            email: user.email,
-        };
-        const token = this.jwtService.sign(payload);
-
-        // console.log("here 3");
-
-        // return user without password and token
         return {
-            access_token: token
+            ...tokens,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+            },
         };
     }
 
@@ -139,6 +118,71 @@ export class AuthService {
 
         // return success message
         return AppResponse.format(HttpStatus.OK, 'Password changed successfully!', null);
+    }
+
+    async refreshToken(userId: string, refreshToken: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user || !user.hashedRt) {
+            throw new CustomException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+        }
+
+        const isRtValid = await bcrypt.compare(refreshToken, user.hashedRt);
+        if (!isRtValid) {
+            throw new CustomException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+        }
+
+        const tokens = await this.generateTokens(user.id, user.email);
+        await this.updateRefreshToken(user.id, tokens.refresh_token);
+
+        return {
+            ...tokens,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+            },
+        };
+    }
+
+
+    // service method to generate tokens
+    async generateTokens(id: string, email: string) {
+        const payload = { id, email };
+
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync(payload, {
+                secret: this.config.get('JWT_SECRET'),
+                expiresIn: '15m',
+            }),
+            this.jwtService.signAsync(payload, {
+                secret: this.config.get('JWT_REFRESH_SECRET'),
+                expiresIn: '7d',
+            }),
+        ]);
+
+        return { access_token: accessToken, refresh_token: refreshToken };
+    }
+
+    // service method to update refresh token
+    async updateRefreshToken(userId: string, rt: string) {
+        const hash = await bcrypt.hash(rt, parseInt(this.config.get('SALT_ROUNDS')) || 10);
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { hashedRt: hash },
+        });
+    }
+
+    // service method to logout user
+    async logout(userId: string) {
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { hashedRt: null },
+        });
+
+        return AppResponse.format(HttpStatus.OK, 'Logged out successfully', null);
     }
 
 }

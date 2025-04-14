@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './strategy/jwt.strategy';
+import { JwtStrategy, JwtRefreshStrategy } from './strategy/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -9,7 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
     secret: process.env.JWT_SECRET || 'secretKey'
   })],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy]
+  providers: [AuthService, JwtStrategy, JwtRefreshStrategy]
 })
 
 export class AuthModule { }

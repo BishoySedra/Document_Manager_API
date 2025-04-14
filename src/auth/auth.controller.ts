@@ -2,7 +2,8 @@ import { Controller, Post, Body, Patch, UseGuards, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import * as AuthDto from './dto/auth.dto';
 import { User } from './decorator';
-import { jwtGuard } from './guard/jwt.guard';
+import { JwtGuard, JwtRefreshGuard } from './guard/jwt.guard';
+import { userInfo } from 'os';
 
 @Controller('auth')
 export class AuthController {
@@ -23,17 +24,31 @@ export class AuthController {
     }
 
     // endpoint to get user profile
-    @UseGuards(jwtGuard)
+    @UseGuards(JwtGuard)
     @Get("profile")
     profile(@User() userInfo: any) {
         return this.authService.profile(userInfo);
     }
 
     // endpoint to change password
-    @UseGuards(jwtGuard)
+    @UseGuards(JwtGuard)
     @Patch("password")
     changePassword(@Body() data: AuthDto.ChangePasswordDto, @User('id') userId: string) {
         return this.authService.changePassword(data, userId);
+    }
+
+    // endpoint to refresh token
+    @UseGuards(JwtRefreshGuard)
+    @Post("refresh")
+    refreshToken(@User('id') userId: string, @User('refreshToken') refreshToken: string) {
+        return this.authService.refreshToken(userId, refreshToken);
+    }
+
+    // endpoint to logout a user
+    @UseGuards(JwtGuard)
+    @Post('logout')
+    logout(@User('id') userId: string) {
+        return this.authService.logout(userId);
     }
 
 }
