@@ -24,7 +24,18 @@ export class LoginDto {
     password: string;
 }
 
+export class ChangePasswordDto {
+    @IsNotEmpty()
+    @IsString()
+    oldPassword: string;
+
+    @IsNotEmpty()
+    @IsString()
+    newPassword: string;
+}
+
 export interface AuthPayload {
     id: string;
     email: string;
 }
+
