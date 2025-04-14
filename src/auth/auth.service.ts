@@ -1,4 +1,4 @@
-import { HttpCode, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomException } from '../common/exceptions/custom.exception';
 import * as bcrypt from 'bcrypt';
@@ -155,11 +155,11 @@ export class AuthService {
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(payload, {
                 secret: this.config.get('JWT_SECRET'),
-                expiresIn: '15m',
+                expiresIn: this.config.get('JWT_ACCESS_EXPIRES_IN') || '15m',
             }),
             this.jwtService.signAsync(payload, {
                 secret: this.config.get('JWT_REFRESH_SECRET'),
-                expiresIn: '7d',
+                expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN') || '7d',
             }),
         ]);
 
