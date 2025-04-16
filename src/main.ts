@@ -12,7 +12,8 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
 
   // setting up global prefix for the API
-  app.setGlobalPrefix('api/v1');
+  const prefix = process.env.PREFIX_URL || '/api/v1';
+  app.setGlobalPrefix(prefix);
 
   // enabling CORS
   app.enableCors({

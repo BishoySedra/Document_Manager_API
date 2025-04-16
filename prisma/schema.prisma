@@ -68,9 +68,15 @@ model DocumentPermission {
 enum FileType {
   PDF
   DOCX
+  DOC
+  CSV
+  XLS
   XLSX
+  PPT
+  PPTX
   TXT
 }
+
 
 enum Permission {
   VIEW

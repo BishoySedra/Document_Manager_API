@@ -66,18 +66,15 @@ export class AuthService {
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
         return {
-            ...tokens,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
+            ...tokens
         };
     }
 
-
     // service method to get user profile
-    async profile(userInfo: AuthDto.AuthPayload) {
+    async profile(userInfo: any) {
+
+        // delete hashedRt from userInfo
+        delete userInfo.hashedRt;
         return userInfo;
     }
 
