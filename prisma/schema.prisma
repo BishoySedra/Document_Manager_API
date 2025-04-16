@@ -77,7 +77,6 @@ enum FileType {
   TXT
 }
 
-
 enum Permission {
   VIEW
   EDIT

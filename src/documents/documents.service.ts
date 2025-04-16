@@ -4,6 +4,7 @@ import { AppResponse } from '../common/utils/response.util';
 import { CustomException } from 'src/common/exceptions/custom.exception';
 import { CloudinaryService } from 'nestjs-cloudinary';
 import { FileType } from '@prisma/client';
+import * as DocumentsDto from './dto/documents.dto';
 
 @Injectable()
 export class DocumentService {
@@ -44,6 +45,7 @@ export class DocumentService {
         return AppResponse.format(HttpStatus.CREATED, "File uploaded successfully", document);
     }
 
+    // helper to upload file to cloudinary
     async uploadToCloudinary(file: Express.Multer.File): Promise<string> {
         try {
             const { secure_url } = await this.cloudinaryService.uploadFile(file, {
@@ -58,6 +60,7 @@ export class DocumentService {
         }
     }
 
+    // helper to get file type from mimetype
     getFileType(mimetype: string): string {
         switch (mimetype) {
             case 'application/pdf':
@@ -83,6 +86,7 @@ export class DocumentService {
         }
     }
 
+    // service method to get document by id
     async getDocumentsById(id: string, userId: string) {
         // find the document by id
         const document = await this.prisma.document.findUnique({
@@ -112,5 +116,70 @@ export class DocumentService {
 
         // create a response object
         return AppResponse.format(HttpStatus.OK, "Document retrieved successfully", document);
+    }
+
+    // service method to delete document by id
+    async deleteDocument(id: string, userId: string) {
+        // find the document by id
+        const document = await this.prisma.document.findUnique({
+            where: {
+                id,
+            },
+        });
+
+        // check if the document exists
+        if (!document) {
+            throw new CustomException("Document not found", HttpStatus.NOT_FOUND);
+        }
+
+        // check if the user is authorized to delete the document
+        if (document.uploadedById !== userId) {
+            throw new CustomException("Unauthorized access to delete this doc!", HttpStatus.UNAUTHORIZED);
+        }
+
+        // delete the document from database
+        await this.prisma.document.delete({
+            where: {
+                id,
+            },
+        });
+
+        // create a response object
+        return AppResponse.format(HttpStatus.OK, `Document with ID ${document.id} deleted successfully`, null);
+    }
+
+    // service method to add metadata to document
+    async updateMetaData(id: string, metaData: DocumentsDto.MetaDataDto, userId: string) {
+        // find the document by id
+        const document = await this.prisma.document.findUnique({
+            where: {
+                id,
+            },
+        });
+
+        // check if the document exists
+        if (!document) {
+            throw new CustomException("Document not found", HttpStatus.NOT_FOUND);
+        }
+
+        // check if the user is authorized to update the document
+        if (document.uploadedById !== userId) {
+            throw new CustomException("Unauthorized access to update this doc!", HttpStatus.UNAUTHORIZED);
+        }
+
+        // update the document metadata
+        const { tags, description } = metaData;
+        const updatedDocument = await this.prisma.document.update({
+            where: {
+                id,
+            },
+            data: {
+                tags,
+                description,
+            },
+        });
+
+        // create a response object
+        return AppResponse.format(HttpStatus.OK, `Document with ID ${document.id} updated successfully`, updatedDocument);
     }
 }

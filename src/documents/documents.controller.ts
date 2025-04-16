@@ -1,8 +1,7 @@
-import { Controller, UseInterceptors, Post, Get, UploadedFile, Body, ParseFilePipeBuilder, HttpStatus, UseGuards, Param } from '@nestjs/common';
+import { Controller, UseInterceptors, Post, Get, Delete, UploadedFile, Body, ParseFilePipeBuilder, HttpStatus, UseGuards, Param, Patch } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentService } from './documents.service'
 import * as DocumentsDto from './dto/documents.dto';
-import { CloudinaryService } from 'nestjs-cloudinary';
 import { JwtGuard } from 'src/auth/guard';
 import { User } from 'src/auth/decorator';
 
@@ -21,8 +20,21 @@ export class DocumentsController {
     }
 
     // endpoint to get documents by id
-    @Get('/:id')
+    @Get(':id')
     getDocumentsById(@Param('id') id: string, @User("id") userId: string) {
         return this.documentService.getDocumentsById(id, userId);
     }
+
+    // endpoint to delete document by id
+    @Delete(':id')
+    deleteDocument(@Param('id') id: string, @User("id") userId: string) {
+        return this.documentService.deleteDocument(id, userId);
+    }
+
+    // endpoint to update metadata of document
+    @Patch(":id/metadata")
+    addMetaData(@Param('id') id: string, @Body() metaData: DocumentsDto.MetaDataDto, @User("id") userId: string) {
+        return this.documentService.updateMetaData(id, metaData, userId);
+    }
+
 }
