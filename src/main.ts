@@ -36,7 +36,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   // starting the app
-  await app.listen(3000);
+  await app.listen(port);
 
   console.log(`Application is running on: ${port}!`);
 }
