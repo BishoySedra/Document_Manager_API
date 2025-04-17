@@ -117,6 +117,7 @@ export class AuthService {
         return AppResponse.format(HttpStatus.OK, 'Password changed successfully!', null);
     }
 
+    // service method to refresh token
     async refreshToken(userId: string, refreshToken: string) {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
@@ -144,8 +145,7 @@ export class AuthService {
         };
     }
 
-
-    // service method to generate tokens
+    // helper method to generate tokens
     async generateTokens(id: string, email: string) {
         const payload = { id, email };
 
@@ -163,7 +163,7 @@ export class AuthService {
         return { access_token: accessToken, refresh_token: refreshToken };
     }
 
-    // service method to update refresh token
+    // helper method to update refresh token
     async updateRefreshToken(userId: string, rt: string) {
         const hash = await bcrypt.hash(rt, parseInt(this.config.get('SALT_ROUNDS')) || 10);
         await this.prisma.user.update({
