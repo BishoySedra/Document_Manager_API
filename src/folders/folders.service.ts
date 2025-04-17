@@ -76,4 +76,27 @@ export class FoldersService {
         // returning the folders
         return AppResponse.format(HttpStatus.OK, 'Folders found successfully', folders);
     }
+
+    // method to get folder by id
+    async getFolderById(createdById: string, id: string) {
+        // checking if the folder exists
+        const folder = await this.prisma.folder.findUnique({
+            where: {
+                id
+            },
+        });
+
+        // checking if the folder exists
+        if (!folder) {
+            throw new CustomException('Folder not found', HttpStatus.NOT_FOUND);
+        }
+
+        // checking if the user is authorized to access the folder
+        if (folder.createdById !== createdById) {
+            throw new CustomException('Unauthorized access to this folder', HttpStatus.UNAUTHORIZED);
+        }
+
+        // returning the folder
+        return AppResponse.format(HttpStatus.OK, 'Folder found successfully', folder);
+    }
 }
