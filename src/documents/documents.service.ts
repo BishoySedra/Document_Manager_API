@@ -167,8 +167,20 @@ export class DocumentService {
             throw new CustomException("Unauthorized access to update this doc!", HttpStatus.UNAUTHORIZED);
         }
 
+        // check if the folderId exists in the database
+        if (metaData.folderId) {
+            const folder = await this.prisma.folder.findUnique({
+                where: {
+                    id: metaData.folderId,
+                },
+            });
+
+            if (!folder) {
+                throw new CustomException("Folder not found", HttpStatus.NOT_FOUND);
+            }
+        }
+
         // update the document metadata
-        const { tags, description } = metaData;
         const updatedDocument = await this.prisma.document.update({
             where: {
                 id,

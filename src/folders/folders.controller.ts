@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, Patch, Delete } from '@nestjs/common';
 import { FoldersService } from './folders.service';
 import * as FolderDto from './dto/folders.dto';
 import { JwtGuard } from 'src/auth/guard';
@@ -34,5 +34,17 @@ export class FoldersController {
     @Patch(':id')
     updateFolder(@User('id') userId: string, @Param('id') folderId: string, @Body() folderDto: FolderDto.UpdateFolderDto) {
         return this.foldersService.updateFolder(userId, folderId, folderDto);
+    }
+
+    // endpoint to delete a folder
+    @Delete(':id')
+    deleteFolder(@User('id') userId: string, @Param('id') folderId: string) {
+        return this.foldersService.deleteFolder(userId, folderId);
+    }
+
+    // endpoint to get folder contents by folder id
+    @Get(':id/documents')
+    getFolderContents(@User('id') userId: string, @Param('id') folderId: string) {
+        return this.foldersService.getFolderContents(userId, folderId);
     }
 }

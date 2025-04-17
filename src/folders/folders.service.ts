@@ -121,6 +121,19 @@ export class FoldersService {
             throw new CustomException('Parent folder cannot be the same as the current folder', HttpStatus.BAD_REQUEST);
         }
 
+        // check if the parentFolderId exists in the database
+        if (folderDto.parentFolderId) {
+            const parentFolder = await this.prisma.folder.findUnique({
+                where: {
+                    id: folderDto.parentFolderId,
+                },
+            });
+
+            if (!parentFolder) {
+                throw new CustomException('Parent folder not found', HttpStatus.NOT_FOUND);
+            }
+        }
+
         // updating the folder
         const updatedFolder = await this.prisma.folder.update({
             where: {
@@ -138,5 +151,56 @@ export class FoldersService {
 
         // returning the updated folder
         return AppResponse.format(HttpStatus.OK, 'Folder updated successfully', updatedFolder);
+    }
+
+    // method to delete folder
+    async deleteFolder(createdById: string, id: string) {
+        // checking if the folder exists
+        const folder = await this.prisma.folder.findUnique({
+            where: {
+                id,
+                createdById,
+            },
+        });
+
+        if (!folder) {
+            throw new CustomException('Folder not found or you are not authorized to delete this folder', HttpStatus.NOT_FOUND);
+        }
+
+        // deleting the folder
+        const deletedFolder = await this.prisma.folder.delete({
+            where: {
+                id,
+            },
+        });
+
+        // checking if the folder is deleted successfully
+        if (!deletedFolder) {
+            throw new CustomException('Folder not deleted', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // returning the deleted folder
+        return AppResponse.format(HttpStatus.OK, 'Folder deleted successfully', deletedFolder);
+    }
+
+    // method to get folder contents
+    async getFolderContents(createdById: string, id: string) {
+        // checking if the folder exists
+        const folder = await this.prisma.folder.findUnique({
+            where: {
+                id,
+                createdById,
+            },
+            include: {
+                documents: true,
+            },
+        });
+
+        if (!folder) {
+            throw new CustomException('Folder not found or you are not authorized to access this folder', HttpStatus.NOT_FOUND);
+        }
+
+        // returning the folder contents
+        return AppResponse.format(HttpStatus.OK, 'Folder contents found successfully', folder.documents);
     }
 }
