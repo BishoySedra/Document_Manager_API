@@ -32,8 +32,10 @@ model Folder {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
+  @@unique([name, createdById])  // Ensure uniqueness of name and createdById together
   @@map("folders")
 }
+
 
 model Document {
   id                  String                @id @default(uuid())

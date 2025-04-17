@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, Patch } from '@nestjs/common';
 import { FoldersService } from './folders.service';
 import * as FolderDto from './dto/folders.dto';
 import { JwtGuard } from 'src/auth/guard';
@@ -28,5 +28,11 @@ export class FoldersController {
     @Get(':id')
     getFolderById(@User('id') userId: string, @Param('id') folderId: string) {
         return this.foldersService.getFolderById(userId, folderId);
+    }
+
+    // endpoint to update a folder
+    @Patch(':id')
+    updateFolder(@User('id') userId: string, @Param('id') folderId: string, @Body() folderDto: FolderDto.UpdateFolderDto) {
+        return this.foldersService.updateFolder(userId, folderId, folderDto);
     }
 }

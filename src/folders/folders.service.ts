@@ -13,21 +13,27 @@ export class FoldersService {
     // method to create a folder
     async createFolder(folderDto: FolderDto.CreateFolderDto, createdById: string) {
 
-        // checking if the folder name is empty
-        if (!folderDto.name) {
-            throw new CustomException('Folder name is required', HttpStatus.BAD_REQUEST);
-        }
-
         // checking if the folder already exists
         const folderExists = await this.prisma.folder.findFirst({
             where: {
                 name: folderDto.name,
+                createdById,
             },
         });
 
-        // if the folder already exists, then make the name concatenated with the current date
         if (folderExists) {
-            folderDto.name = `${folderDto.name}-${Date.now()}`;
+            throw new CustomException('Folder already exists please choose a different name', HttpStatus.BAD_REQUEST);
+        }
+
+        // checking if the user exists
+        const userExists = await this.prisma.user.findUnique({
+            where: {
+                id: createdById,
+            },
+        });
+
+        if (!userExists) {
+            throw new CustomException('User not found', HttpStatus.NOT_FOUND);
         }
 
         // creating the folder
@@ -45,6 +51,7 @@ export class FoldersService {
 
         // returning the folder
         return AppResponse.format(HttpStatus.CREATED, 'Folder created successfully', folder);
+
     }
 
     // method to get all folders
@@ -82,21 +89,54 @@ export class FoldersService {
         // checking if the folder exists
         const folder = await this.prisma.folder.findUnique({
             where: {
-                id
+                id,
+                createdById
             },
         });
 
-        // checking if the folder exists
         if (!folder) {
-            throw new CustomException('Folder not found', HttpStatus.NOT_FOUND);
-        }
-
-        // checking if the user is authorized to access the folder
-        if (folder.createdById !== createdById) {
-            throw new CustomException('Unauthorized access to this folder', HttpStatus.UNAUTHORIZED);
+            throw new CustomException('Folder not found or you are not authorized to access this folder', HttpStatus.NOT_FOUND);
         }
 
         // returning the folder
         return AppResponse.format(HttpStatus.OK, 'Folder found successfully', folder);
+    }
+
+    // method to update folder
+    async updateFolder(createdById: string, id: string, folderDto: FolderDto.UpdateFolderDto) {
+        // checking if the folder exists
+        const folder = await this.prisma.folder.findUnique({
+            where: {
+                id,
+                createdById,
+            },
+        });
+
+        if (!folder) {
+            throw new CustomException('Folder not found or you are not authorized to update this folder', HttpStatus.NOT_FOUND);
+        }
+
+        // check if the parentFolderId exists and is not the same as the current folder id
+        if (folderDto.parentFolderId && folderDto.parentFolderId === id) {
+            throw new CustomException('Parent folder cannot be the same as the current folder', HttpStatus.BAD_REQUEST);
+        }
+
+        // updating the folder
+        const updatedFolder = await this.prisma.folder.update({
+            where: {
+                id,
+            },
+            data: {
+                ...folderDto,
+            },
+        });
+
+        // checking if the folder is updated successfully
+        if (!updatedFolder) {
+            throw new CustomException('Folder not updated', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // returning the updated folder
+        return AppResponse.format(HttpStatus.OK, 'Folder updated successfully', updatedFolder);
     }
 }

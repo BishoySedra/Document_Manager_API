@@ -7,5 +7,15 @@ export class CreateFolderDto {
 
     @IsString()
     @IsOptional()
-    parentId?: string;
+    parentFolderId?: string;
+}
+
+export class UpdateFolderDto {
+    @IsString()
+    @IsOptional()
+    name?: string;
+
+    @IsString()
+    @IsOptional()
+    parentFolderId?: string;
 }
