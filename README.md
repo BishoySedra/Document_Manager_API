@@ -220,10 +220,6 @@ The application also supports a **JWT Refresh Token** mechanism to extend user s
 
 ---
 
-Sure! Based on your request, I have updated the **Testing** section to include both the **published Postman documentation URL** and the **JSON file for importing the collection**.
-
----
-
 ## Testing
 
 Ensure that your **PostgreSQL** database is running and your `.env` file is correctly configured. You can use **Postman** for testing the API. Below are the resources for testing:
