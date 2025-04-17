@@ -4,9 +4,17 @@ export class MetaDataDto {
     @IsString()
     @IsNotEmpty()
     @IsOptional()
-    description: string;
+    description?: string;
 
     @IsString({ each: true })
     @IsOptional()
-    tags: string[];
+    tags?: string[];
+
+    @IsString()
+    @IsOptional()
+    title?: string;
+
+    @IsString()
+    @IsOptional()
+    folderId?: string;
 }

@@ -174,8 +174,7 @@ export class DocumentService {
                 id,
             },
             data: {
-                tags,
-                description,
+                ...metaData
             },
         });
 
