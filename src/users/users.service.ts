@@ -32,11 +32,9 @@ export class UsersService {
 
     // service to get user by id
     async getUserById(currentUserId: string, currentUserRole: string, specificUserId: string) {
-        console.log(`currentUserId: ${currentUserId}, currentUserRole: ${currentUserRole}, specificUserId: ${specificUserId}`);
+
         // check if the current user is an admin or is trying to access their own account
-        if (currentUserRole !== "ADMIN" && currentUserId !== specificUserId) {
-            throw new CustomException('You are not authorized to view this user', 403);
-        }
+        await this.checkAuthorization(currentUserId, currentUserRole, specificUserId);
 
         // find the user in the database
         const user = await this.prismaService.user.findUnique({
@@ -62,9 +60,7 @@ export class UsersService {
     // service to update user by id
     async updateUserById(currentUserId: string, currentUserRole: string, specificUserId: string, updateProfileDto: userDto.updateProfileDto) {
         // check if the current user is an admin or is trying to access their own account
-        if (currentUserRole !== "ADMIN" && currentUserId !== specificUserId) {
-            throw new CustomException('You are not authorized to update this user', 403);
-        }
+        await this.checkAuthorization(currentUserId, currentUserRole, specificUserId);
 
         // find the user in the database
         const user = await this.prismaService.user.findUnique({
@@ -79,9 +75,9 @@ export class UsersService {
         }
 
         // check the role if provided
-        let role = updateProfileDto.role;
-        if (role) {
-            if (role !== "ADMIN" && role !== "USER") {
+        if (updateProfileDto.role) {
+            updateProfileDto.role = updateProfileDto.role.toUpperCase(); // convert to uppercase
+            if (updateProfileDto.role !== "ADMIN" && updateProfileDto.role !== "USER") {
                 throw new CustomException('Invalid role', 400);
             }
         }
@@ -138,4 +134,10 @@ export class UsersService {
         return deletedUser;
     }
 
+    // helper method to check if the current user can access the requested resource
+    private async checkAuthorization(currentUserId: string, currentUserRole: string, targetUserId: string) {
+        if (currentUserRole !== Role.ADMIN && currentUserId !== targetUserId) {
+            throw new CustomException('Unauthorized action', 403);
+        }
+    }
 }
