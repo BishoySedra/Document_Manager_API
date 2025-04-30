@@ -6,6 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from '@nestjs/config';
 import * as AuthDto from './dto/auth.dto';
 import { AppResponse } from 'src/common/utils/response.util';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,11 @@ export class AuthService {
             throw new CustomException('User already exists', HttpStatus.BAD_REQUEST);
         }
 
+        let role: String = "USER";
+        if (data.role) {
+            role = this.getRole(data.role as string);
+        }
+
         // hash password
         const hashedPassword = await bcrypt.hash(data.password, parseInt(this.config.get('SALT_ROUNDS')) || 10);
         // console.log("here 0");
@@ -40,6 +46,7 @@ export class AuthService {
             data: {
                 name: data.name,
                 email: data.email,
+                role: role as Role,
                 password: hashedPassword,
             },
         });
@@ -50,6 +57,18 @@ export class AuthService {
             name: user.name,
             email: user.email,
         };
+    }
+
+    // helper method to get the right role
+    getRole(role: string) {
+        switch (role.toLowerCase()) {
+            case 'admin':
+                return 'ADMIN';
+            case 'user':
+                return 'USER';
+            default:
+                return 'USER';
+        }
     }
 
     // service method to login a user

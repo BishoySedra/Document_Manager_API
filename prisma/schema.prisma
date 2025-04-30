@@ -13,11 +13,17 @@ model User {
   email               String                @unique
   password            String
   hashedRt            String?
+  role                Role                  @default(USER)
   folders             Folder[]
   documents           Document[]
   documentPermissions DocumentPermission[]
 
   @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Folder {
