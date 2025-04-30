@@ -37,4 +37,10 @@ export class DocumentsController {
         return this.documentService.updateMetaData(id, metaData, userId);
     }
 
+    // endpoint to get permissions of document
+    @Get(":id/permissions")
+    getDocumentPermissions(@Param('id') id: string) {
+        return this.documentService.getDocumentPermissions(id);
+    }
+
 }

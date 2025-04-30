@@ -193,4 +193,40 @@ export class DocumentService {
         // create a response object
         return AppResponse.format(HttpStatus.OK, `Document with ID ${document.id} updated successfully`, updatedDocument);
     }
+
+    // service method to get document permissions
+    async getDocumentPermissions(id: string) {
+        // find the document by id
+        const document = await this.prisma.document.findUnique({
+            where: {
+                id,
+            },
+            include: {
+                documentPermissions: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                            },
+                        },
+                    },
+                    omit: {
+                        id: true,
+                        documentId: true,
+                        userId: true,
+                    }
+                },
+            },
+        });
+
+        // check if the document exists
+        if (!document) {
+            throw new CustomException("Document not found", HttpStatus.NOT_FOUND);
+        }
+
+        // create a response object
+        return AppResponse.format(HttpStatus.OK, "Document permissions retrieved successfully", document.documentPermissions);
+    }
 }
