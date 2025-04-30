@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, UseGuards, Param, Body } from '@nestjs/common';
+import { Controller, Get, Patch, UseGuards, Param, Body, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from 'src/auth/decorator';
 import { UserRoles } from 'src/common/roles/user-roles.decorator';
@@ -13,7 +13,7 @@ export class UsersController {
     // Inject the UsersService
     constructor(private readonly usersService: UsersService) { }
 
-    // Endpoint to get all users
+    // Endpoint to get all users (ADMIN only)
     @Get()
     @UserRoles(Role.ADMIN)
     @UseGuards(RolesGuard)
@@ -31,5 +31,13 @@ export class UsersController {
     @Patch(':id')
     updateUserById(@User('id') userId: string, @User('role') userRole: string, @Param('id') id: string, @Body() updateProfileDto: userDto.updateProfileDto) {
         return this.usersService.updateUserById(userId, userRole, id, updateProfileDto);
+    }
+
+    // Endpoint to delete user by ID (ADMIN only)
+    @Delete(':id')
+    @UserRoles(Role.ADMIN)
+    @UseGuards(RolesGuard)
+    deleteUserById(@Param('id') id: string) {
+        return this.usersService.deleteUserById(id);
     }
 }
