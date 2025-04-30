@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from 'src/auth/decorator';
 import { UserRoles } from 'src/common/roles/user-roles.decorator';
@@ -19,6 +18,12 @@ export class UsersController {
     @UseGuards(RolesGuard)
     getAllUsers(@User('id') userId: string) {
         return this.usersService.getAllUsers(userId);
+    }
+
+    // Endpoint to get user by ID
+    @Get(':id')
+    getUserById(@User('id') userId: string, @User('role') userRole: string, @Param('id') id: string) {
+        return this.usersService.getUserById(userId, userRole, id);
     }
 
 }
