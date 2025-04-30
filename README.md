@@ -84,9 +84,10 @@ CLOUDINARY_SECRET_KEY=your_api_secret
 - **User Authentication**: Supports **JWT** authentication for users.
 - **Folder Management**: Users can create folders, organize them, and manage subfolders.
 - **File Upload**: Supports uploading of documents (PDF, DOCX, XLSX, TXT, etc.) using **Multer** and **Cloudinary**.
-- **Role-Based Access Control (RBAC)**: Allows assigning permissions to users for documents (view, edit, download).
-- **Exception Handling**: Custom exceptions with **JSON response formatting** based on JSend specification.
+- **Role-Based Access Control (RBAC)**: Allows assigning permissions to users for documents (view, edit, download). Admins can manage all users.
+- **Exception Handling**: Custom exceptions with **JSON response formatting** based on the JSend specification.
 - **JWT Refresh Tokens**: Support for refreshing JWT tokens with the refresh token mechanism.
+- **User Role Management**: Admins can view, update, and delete user profiles with role-based access.
 
 ---
 
@@ -113,6 +114,12 @@ CLOUDINARY_SECRET_KEY=your_api_secret
 - **GET** `/folders/:id/documents`: Retrieve documents associated with a specific folder.
 - **PATCH** `/folders/:id`: Update a folder (e.g., rename) by ID.
 - **DELETE** `/folders/:id`: Delete a folder by ID.
+
+### User Management (Admin Only)
+- **GET** `/users`: Retrieve all users (admin-only).
+- **GET** `/users/:id`: Retrieve a user by ID (admin-only or users can access their own).
+- **PATCH** `/users/:id`: Update a user profile by ID (admin-only or users can update their own).
+- **DELETE** `/users/:id`: Delete a user by ID (admin-only).
 
 ---
 
