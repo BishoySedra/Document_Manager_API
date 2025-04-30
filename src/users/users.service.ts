@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CustomException } from 'src/common/exceptions/custom.exception';
 import * as userDto from './dto/users.dto';
@@ -51,7 +51,7 @@ export class UsersService {
 
         // if user not found, throw an exception
         if (!user) {
-            throw new CustomException('User not found', 404);
+            throw new CustomException('User not found', HttpStatus.NOT_FOUND);
         }
 
         return user;
@@ -71,15 +71,7 @@ export class UsersService {
 
         // if user not found, throw an exception
         if (!user) {
-            throw new CustomException('User not found', 404);
-        }
-
-        // check the role if provided
-        if (updateProfileDto.role) {
-            updateProfileDto.role = updateProfileDto.role.toUpperCase(); // convert to uppercase
-            if (updateProfileDto.role !== "ADMIN" && updateProfileDto.role !== "USER") {
-                throw new CustomException('Invalid role', 400);
-            }
+            throw new CustomException('User not found', HttpStatus.NOT_FOUND);
         }
 
         // update the user in the database
@@ -117,7 +109,7 @@ export class UsersService {
 
         // if user not found, throw an exception
         if (!user) {
-            throw new CustomException('User not found', 404);
+            throw new CustomException('User not found', HttpStatus.NOT_FOUND);
         }
 
         // delete the user in the database
@@ -128,7 +120,7 @@ export class UsersService {
         });
 
         if (!deletedUser) {
-            throw new CustomException('User not deleted', 500);
+            throw new CustomException('User not deleted', HttpStatus.NOT_FOUND);
         }
 
         return deletedUser;
@@ -137,7 +129,7 @@ export class UsersService {
     // helper method to check if the current user can access the requested resource
     private async checkAuthorization(currentUserId: string, currentUserRole: string, targetUserId: string) {
         if (currentUserRole !== Role.ADMIN && currentUserId !== targetUserId) {
-            throw new CustomException('Unauthorized action', 403);
+            throw new CustomException('Unauthorized action', HttpStatus.UNAUTHORIZED);
         }
     }
 }

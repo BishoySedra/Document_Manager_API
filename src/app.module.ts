@@ -6,13 +6,14 @@ import { UsersModule } from './users/users.module';
 import { DocumentsModule } from './documents/documents.module';
 import { NestCloudinaryClientModule } from './nest-cloudinary-client/nest-cloudinary-client.module';
 import { FoldersModule } from './folders/folders.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [PrismaModule, ConfigModule.forRoot(
     {
       isGlobal: true,
     },
-  ), AuthModule, UsersModule, DocumentsModule, NestCloudinaryClientModule, FoldersModule],
+  ), AuthModule, UsersModule, DocumentsModule, NestCloudinaryClientModule, FoldersModule, PermissionsModule],
   providers: [],
 })
 export class AppModule { }

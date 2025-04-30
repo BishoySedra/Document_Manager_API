@@ -70,8 +70,10 @@ model DocumentPermission {
   userId     String
   permission Permission
 
+  @@unique([documentId, userId]) // Enforces one permission per user per document
   @@map("documentPermissions")
 }
+
 
 enum FileType {
   PDF

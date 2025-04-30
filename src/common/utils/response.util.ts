@@ -4,12 +4,6 @@ export class AppResponse {
     }
 
     static isFormatted(data: any): boolean {
-        return (
-            typeof data === 'object' &&
-            data !== null &&
-            'status' in data &&
-            'message' in data &&
-            'body' in data
-        );
+        return (typeof data === 'object' && data !== null && 'status' in data && 'message' in data && 'body' in data);
     }
 }
