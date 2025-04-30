@@ -1,11 +1,15 @@
-export class CreateUserDto {
-    name: string;
-    email: string;
-    password: string;
-    role?: 'ADMIN' | 'EDITOR' | 'VIEWER';
-}
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
-export class LoginUserDto {
-    email: string;
-    password: string;
+export class updateProfileDto {
+    @IsString()
+    @IsOptional()
+    name?: string;
+
+    @IsEmail()
+    @IsOptional()
+    email?: string;
+
+    @IsString()
+    @IsOptional()
+    role?: string;
 }
