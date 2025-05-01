@@ -1,5 +1,5 @@
 // roles.guard.ts
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, ForbiddenException, HttpStatus } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, HttpStatus } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { Role } from '@prisma/client';
@@ -11,6 +11,7 @@ export class RolesGuard implements CanActivate {
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const requiredRoles = this.reflector.get<Role[]>('roles', context.getHandler());
+
         if (!requiredRoles) {
             return true;  // No role required, allow access
         }
