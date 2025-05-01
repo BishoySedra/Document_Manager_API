@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CustomException } from 'src/common/exceptions/custom.exception';
 import * as userDto from './dto/users.dto';
 import { Role } from '@prisma/client';
+import { AppResponse } from 'src/common/utils/response.util';
 
 @Injectable()
 export class UsersService {
@@ -131,5 +132,34 @@ export class UsersService {
         if (currentUserRole !== Role.ADMIN && currentUserId !== targetUserId) {
             throw new CustomException('Unauthorized action', HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    // service to get the accessible documents by specific user ID
+    async getUserDocuments(id: string) {
+        // find the user in the database
+        const documents = await this.prismaService.user.findUnique({
+            where: {
+                id
+            },
+            include: {
+                documentPermissions: {
+                    include: {
+                        document: true,
+                    }, omit: {
+                        id: true,
+                        documentId: true,
+                        userId: true
+                    }
+                }
+            }
+        })
+
+
+        // if user not found, throw an exception
+        if (!documents) {
+            throw new CustomException('User not found', HttpStatus.NOT_FOUND);
+        }
+
+        return AppResponse.format(HttpStatus.OK, "Documents retrieved successfully", documents.documentPermissions);
     }
 }

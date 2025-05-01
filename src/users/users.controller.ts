@@ -39,4 +39,10 @@ export class UsersController {
     deleteUserById(@Param('id') id: string) {
         return this.usersService.deleteUserById(id);
     }
+
+    // Endpoint to get the accessible documents by specific user ID
+    @Get(':id/documents')
+    getUserDocuments(@Param('id') id: string) {
+        return this.usersService.getUserDocuments(id);
+    }
 }
