@@ -8,8 +8,11 @@ This is a **Document Manager API** built with **NestJS** and **Prisma ORM** that
 - [Environment Variables](#environment-variables)
 - [Features](#features)
 - [API Endpoints](#api-endpoints)
+- [User Model](#user-model)
+- [DocumentPermission Model](#documentpermission-model)
 - [Folder Model](#folder-model)
 - [Document Model](#document-model)
+- [Enums](#enums)
 - [Exception Handling](#exception-handling)
 - [File Upload & Storage](#file-upload--storage)
 - [JWT Authentication](#jwt-authentication)
@@ -65,7 +68,7 @@ Make sure to configure the following environment variables in your `.env` file:
 
 ```plaintext
 DATABASE_URL=postgresql://user:password@localhost:5432/your-database
-PORT=3000 (optional, change if needed)
+PORT=3000
 SALT_ROUNDS=10
 JWT_SECRET=your_jwt_secret
 JWT_ACCESS_EXPIRES_IN=15m
@@ -123,9 +126,45 @@ CLOUDINARY_SECRET_KEY=your_api_secret
 
 ---
 
-## Folder Model
+## User Model
 
-The **Folder** model defines the folder structure within the application. Folders can have parent-child relationships (subfolders). The schema ensures that folder names are unique per user.
+```prisma
+model User {
+  id                  String                @id @default(uuid())
+  name                String
+  email               String                @unique
+  password            String
+  hashedRt            String?
+  role                Role                  @default(USER)
+  folders             Folder[]
+  documents           Document[]
+  documentPermissions DocumentPermission[]
+
+  @@map("users")
+}
+```
+
+---
+
+## DocumentPermission Model
+
+```prisma
+model DocumentPermission {
+  id         String     @id @default(uuid())
+  document   Document   @relation(fields: [documentId], references: [id])
+  documentId String
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+  permission Permission
+
+  @@unique([documentId, userId])
+  @@map("documentPermissions")
+}
+```
+
+---
+
+## Folder Model
 
 ```prisma
 model Folder {
@@ -140,31 +179,21 @@ model Folder {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  @@unique([name, createdById])  // Ensure uniqueness of name and createdById together
+  @@unique([name, createdById])
   @@map("folders")
 }
 ```
 
-### Folder Fields:
-- **name**: Name of the folder.
-- **createdById**: User ID who created the folder (used for uniqueness).
-- **parentFolderId**: Links to the parent folder (optional for subfolders).
-- **subFolders**: A recursive relation to other folders.
-- **createdAt**: Timestamp when the folder was created.
-- **updatedAt**: Timestamp for the last update.
-
 ---
 
 ## Document Model
-
-The **Document** model stores information about each document, including metadata such as the file path, file type, and the user who uploaded the document.
 
 ```prisma
 model Document {
   id                  String                @id @default(uuid())
   title               String
   description         String?
-  tags                String[] 
+  tags                String[]
   filePath            String
   fileType            FileType
   fileSize            Int
@@ -180,14 +209,44 @@ model Document {
 }
 ```
 
-### Document Fields:
-- **title**: Title of the document.
-- **fileType**: Enum that determines the file type (PDF, DOCX, XLSX, etc.).
-- **filePath**: Path to the file (could be a URL from Cloudinary or local storage).
-- **fileSize**: Size of the file in bytes.
-- **uploadedById**: User ID of the uploader.
-- **folderId**: Optional link to a folder if the document is organized into a folder.
-- **tags**: Tags associated with the document.
+---
+
+## Enums
+
+### FileType Enum
+
+```prisma
+enum FileType {
+  PDF
+  DOCX
+  DOC
+  CSV
+  XLS
+  XLSX
+  PPT
+  PPTX
+  TXT
+}
+```
+
+### Permission Enum
+
+```prisma
+enum Permission {
+  VIEW
+  EDIT
+  DOWNLOAD
+}
+```
+
+### Role Enum
+
+```prisma
+enum Role {
+  USER
+  ADMIN
+}
+```
 
 ---
 
@@ -203,51 +262,34 @@ The application uses a **Global Exception Filter** to catch and format all excep
 }
 ```
 
-Custom exceptions can include additional context for the error in the `body`, allowing clients to receive meaningful error details.
-
 ---
 
 ## File Upload & Storage
 
-The application uses **Multer** for file handling and **Cloudinary** for cloud storage. The uploaded files are processed and stored in Cloudinary. The following configurations have been set:
-
-1. **Multer** handles file uploads with size restrictions and file type validation (PDF, DOCX, XLSX, etc.).
-2. **Cloudinary** handles the storage and retrieval of files after being uploaded.
+- Uses **Multer** to handle local file uploads.
+- Uses **Cloudinary** to store and serve uploaded files.
+- Validates file size and supported file types based on the `FileType` enum.
 
 ---
 
 ## JWT Authentication
 
-The application uses **JWT (JSON Web Tokens)** for user authentication:
-
-- **Access Token**: Used for authenticating requests to protected routes.
-- **Refresh Token**: Used to obtain a new access token once it expires.
-
-The application also supports a **JWT Refresh Token** mechanism to extend user sessions without requiring them to log in again.
+- Authenticates users using **access tokens**.
+- Supports **refresh tokens** for session extension.
+- Tokens are secured via environment-configured secrets.
 
 ---
 
 ## Testing
 
-Ensure that your **PostgreSQL** database is running and your `.env` file is correctly configured. You can use **Postman** for testing the API. Below are the resources for testing:
+- Postman collection and published documentation available:
 
-- **Postman Documentation (Published URL)**:  
-  Access the published Postman documentation to explore the available endpoints and their details.  
-  [View the API Documentation](https://documenter.getpostman.com/view/32763635/2sB2cd3ctG)  
-
-- **Postman Collection JSON File**:  
-  You can also download and import the collection into Postman for quick testing:  
-  [Download Postman Collection](https://github.com/BishoySedra/Document_Manager_API/blob/main/Document%20Manager.postman_collection.json)
-
-After importing the collection, you can test the following and many more endpoints:
-
-- **POST** `/auth/login`: Logs in a user and returns an access token.
-- **POST** `/auth/register`: Registers a new user.
-- **POST** `/documents/upload`: Uploads a new document.
-- **GET** `/folders`: Retrieves all folders of the authenticated user.
-- **GET** `/folders/:id`: Retrieves details of a specific folder.
+  - [API Documentation](https://documenter.getpostman.com/view/32763635/2sB2cd3ctG)
+  - [Download Collection](https://github.com/BishoySedra/Document_Manager_API/blob/main/Document%20Manager.postman_collection.json)
 
 ---
 
-### **Final Thoughts:**
-This API is designed to allow document management with a focus on **user access control**, **file storage**, and **validation**. It also includes **JWT authentication** and **refresh tokens** for secure user sessions.
+### Final Thoughts
+
+This API is designed to allow document management with a focus on user access control, file storage, and validation. It also includes JWT authentication and refresh tokens for secure user sessions.
+
