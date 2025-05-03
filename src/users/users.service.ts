@@ -28,7 +28,12 @@ export class UsersService {
             },
         });
 
-        return users;
+        // if no users found, throw an exception
+        if (!users || users.length === 0) {
+            throw new CustomException('No users found', HttpStatus.NOT_FOUND);
+        }
+
+        return AppResponse.format(HttpStatus.OK, 'Users retrieved successfully', users);
     }
 
     // service to get user by id
@@ -55,13 +60,19 @@ export class UsersService {
             throw new CustomException('User not found', HttpStatus.NOT_FOUND);
         }
 
-        return user;
+        // return the user without the password
+        return AppResponse.format(HttpStatus.OK, `User with ID ${user.id} retrieved successfully`, user);
     }
 
     // service to update user by id
     async updateUserById(currentUserId: string, currentUserRole: string, specificUserId: string, updateProfileDto: userDto.updateProfileDto) {
         // check if the current user is an admin or is trying to access their own account
         await this.checkAuthorization(currentUserId, currentUserRole, specificUserId);
+
+        // getting the current user from the database
+        if (currentUserRole !== Role.ADMIN && updateProfileDto.role) {
+            throw new CustomException('Only admin can update user role', HttpStatus.UNAUTHORIZED);
+        }
 
         // find the user in the database
         const user = await this.prismaService.user.findUnique({
@@ -94,8 +105,7 @@ export class UsersService {
         // remove the password from the response
         const { password, ...userWithoutPassword } = updatedUser;
 
-        return userWithoutPassword;
-
+        return AppResponse.format(HttpStatus.OK, `User with ID ${updatedUser.id} updated successfully`, userWithoutPassword);
     }
 
     // service to delete user by id
@@ -124,11 +134,11 @@ export class UsersService {
             throw new CustomException('User not deleted', HttpStatus.NOT_FOUND);
         }
 
-        return deletedUser;
+        return AppResponse.format(HttpStatus.OK, `User with ID ${deletedUser.id} deleted successfully`, null);
     }
 
     // helper method to check if the current user can access the requested resource
-    private async checkAuthorization(currentUserId: string, currentUserRole: string, targetUserId: string) {
+    async checkAuthorization(currentUserId: string, currentUserRole: string, targetUserId: string) {
         if (currentUserRole !== Role.ADMIN && currentUserId !== targetUserId) {
             throw new CustomException('Unauthorized action', HttpStatus.UNAUTHORIZED);
         }
