@@ -105,7 +105,7 @@ export class FoldersService {
     // method to update folder
     async updateFolder(createdById: string, id: string, folderDto: FolderDto.UpdateFolderDto) {
         // checking if the folder exists
-        const folder = await this.prisma.folder.findUnique({
+        let folder = await this.prisma.folder.findUnique({
             where: {
                 id,
                 createdById,
@@ -115,6 +115,21 @@ export class FoldersService {
         if (!folder) {
             throw new CustomException('Folder not found or you are not authorized to update this folder', HttpStatus.NOT_FOUND);
         }
+
+        // checking if there is a folder with the same name for this user
+        folder = await this.prisma.folder.findUnique({
+            where: {
+                name_createdById: {
+                    name: folderDto.name,
+                    createdById,
+                },
+            }
+        });
+
+        if (folder) {
+            throw new CustomException('Folder with this name already exists', HttpStatus.BAD_REQUEST);
+        }
+
 
         // check if the parentFolderId exists and is not the same as the current folder id
         if (folderDto.parentFolderId && folderDto.parentFolderId === id) {
