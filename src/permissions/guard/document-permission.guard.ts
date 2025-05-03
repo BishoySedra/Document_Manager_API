@@ -53,7 +53,7 @@ export class DocumentPermissionGuard implements CanActivate {
 
         // If there is no permission, throw an exception
         if (!permission) {
-            throw new CustomException('You do not have permission to access this document', HttpStatus.FORBIDDEN);
+            throw new CustomException('You do not have permission to access this document or it does not exist', HttpStatus.FORBIDDEN);
         }
 
         // Check if permission of the user is greater than the required permission

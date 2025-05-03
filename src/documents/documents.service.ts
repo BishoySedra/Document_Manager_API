@@ -23,7 +23,9 @@ export class DocumentService {
 
         const { originalname, mimetype, size } = file;
 
-        const fileType: string = this.getFileType(mimetype);
+        console.log(`File: ${originalname}, Mimetype: ${mimetype}, Size: ${size} bytes`);
+
+        const fileType: FileType = this.getFileType(mimetype);
 
         const title: string = originalname.split('.').slice(0, -1).join('.');
 
@@ -35,7 +37,7 @@ export class DocumentService {
         const document = await this.prisma.document.create({
             data: {
                 title,
-                fileType: fileType as FileType,
+                fileType,
                 fileSize,
                 filePath,
                 uploadedById,
@@ -71,26 +73,27 @@ export class DocumentService {
     }
 
     // helper to get file type from mimetype
-    getFileType(mimetype: string): string {
+    getFileType(mimetype: string): FileType {
         switch (mimetype) {
             case 'application/pdf':
                 return 'PDF';
             case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-                return 'DOCX';
+                return 'DOCX'; // DONE!
             case 'application/msword':
-                return 'DOC';
+                return 'DOC'; // DONE!
             case 'text/csv':
-                return 'CSV';
+                return 'CSV'; // DONE!
             case 'application/vnd.ms-excel':
-                return 'XLS';
+                return 'XLS'; // DONE!
             case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-                return 'XLSX';
+                return 'XLSX'; // DONE!
             case 'application/vnd.ms-powerpoint':
-                return 'PPT';
+                return 'PPT'; // DONE!
             case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-                return 'PPTX';
+                return 'PPTX'; // DONE
             case 'text/plain':
-                return 'TXT';
+            case 'application/octet-stream':
+                return 'TXT'; // DONE!
             default:
                 throw new CustomException("Unsupported file type", HttpStatus.BAD_REQUEST);
         }
@@ -132,6 +135,8 @@ export class DocumentService {
             },
         });
 
+        console.log(`Document: ${document.id}`);
+
         // check if the document exists
         if (!document) {
             throw new CustomException("Document not found", HttpStatus.NOT_FOUND);
@@ -140,7 +145,7 @@ export class DocumentService {
         // delete the document from database
         await this.prisma.document.delete({
             where: {
-                id,
+                id
             },
         });
 
@@ -149,7 +154,7 @@ export class DocumentService {
     }
 
     // service method to add metadata to document
-    async updateMetaData(id: string, metaData: DocumentsDto.MetaDataDto) {
+    async updateMetaData(id: string, metaData: DocumentsDto.MetaDataDto, createdById: string) {
         // find the document by id
         const document = await this.prisma.document.findUnique({
             where: {
@@ -167,11 +172,12 @@ export class DocumentService {
             const folder = await this.prisma.folder.findUnique({
                 where: {
                     id: metaData.folderId,
+                    createdById,
                 },
             });
 
             if (!folder) {
-                throw new CustomException("Folder not found", HttpStatus.NOT_FOUND);
+                throw new CustomException("Folder not found or you are not authorized to access this folder", HttpStatus.NOT_FOUND);
             }
         }
 

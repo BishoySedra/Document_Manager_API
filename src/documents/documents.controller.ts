@@ -42,8 +42,8 @@ export class DocumentsController {
     @Patch(":id/metadata")
     @UserPermissions(Permission.EDIT)
     @UseGuards(DocumentPermissionGuard)
-    addMetaData(@Param('id') id: string, @Body() metaData: DocumentsDto.MetaDataDto) {
-        return this.documentService.updateMetaData(id, metaData);
+    addMetaData(@Param('id') id: string, @Body() metaData: DocumentsDto.MetaDataDto, @User('id') createdById: string) {
+        return this.documentService.updateMetaData(id, metaData, createdById);
     }
 
     // endpoint to get permissions of document
