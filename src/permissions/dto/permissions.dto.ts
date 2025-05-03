@@ -14,3 +14,10 @@ export class PermissionDto {
     @IsEnum(Permission)
     permission: Permission;
 }
+
+export class UpdatePermissionDto {
+
+    @IsNotEmpty()
+    @IsEnum(Permission)
+    permission: Permission;
+}

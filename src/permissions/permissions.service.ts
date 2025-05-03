@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PermissionDto } from './dto/permissions.dto';
+import { PermissionDto, UpdatePermissionDto } from './dto/permissions.dto';
 import { Permission } from '@prisma/client';
 import { CustomException } from 'src/common/exceptions/custom.exception';
 import { AppResponse } from 'src/common/utils/response.util';
@@ -17,9 +17,6 @@ export class PermissionsService {
 
         // Destructure the DTO
         const { documentId, userId, permission } = accessControlDto;
-
-        // getting the user permission
-        const userPermission: Permission = this.getUserPermission(permission);
 
         // check if the permission already exists
         const existingPermission = await this.prisma.documentPermission.findUnique({
@@ -56,53 +53,34 @@ export class PermissionsService {
             throw new CustomException("User not found", HttpStatus.NOT_FOUND);
         }
 
-        // Create a new permission in the database
-        return await this.prisma.documentPermission.create({
+        // Create the permission in the database
+        const createdPermission = await this.prisma.documentPermission.create({
             data: {
                 documentId,
                 userId,
-                permission: userPermission,
+                permission,
             }
         });
-    }
 
-    // Helper method to get the permissions of a user
-    getUserPermission(permission: string) {
-        // Check if the permission is valid
-        permission = permission.toUpperCase();
-        if (permission === "VIEW" || permission === "EDIT" || permission === "DOWNLOAD") {
-            return permission as Permission;
-        } else {
-            throw new CustomException("Invalid permission", HttpStatus.BAD_REQUEST);
-        }
+        // Return the created permission
+        return AppResponse.format(HttpStatus.CREATED, "Permission created successfully", createdPermission);
     }
 
     // Service to update permission by ID
-    async updatePermission(id: string, accessControlDto: PermissionDto) {
-
-        // Destructure the DTO
-        const { documentId, userId, permission } = accessControlDto;
-
-        // getting the user permission
-        const userPermission = this.getUserPermission(permission);
+    async updatePermission(id: string, accessControlDto: UpdatePermissionDto) {
 
         // Check if the permission exists
         const existingPermission = await this.prisma.documentPermission.findUnique({
-            where: {
-                documentId_userId: {
-                    documentId,
-                    userId
-                }
-            }
+            where: { id }
         });
 
         // If the permission does not exist, throw an exception
         if (!existingPermission) {
-            throw new CustomException("Permission not found", HttpStatus.NOT_FOUND);
+            throw new CustomException("Permission not found", 404);
         }
 
-        // Check if the user has the same permission
-        if (existingPermission.permission === userPermission) {
+        // Check if the same permission already exists
+        if (existingPermission.permission === accessControlDto.permission) {
             throw new CustomException("Permission already exists", HttpStatus.CONFLICT);
         }
 
@@ -110,7 +88,7 @@ export class PermissionsService {
         const updatedPermission = await this.prisma.documentPermission.update({
             where: { id },
             data: {
-                permission: userPermission,
+                permission: accessControlDto.permission,
             }
         });
 
