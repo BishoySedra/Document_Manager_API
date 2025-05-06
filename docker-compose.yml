@@ -1,6 +1,28 @@
 version: '3.8'
 
 services:
+  api:
+    build: .
+    container_name: nest-app
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - dev-db
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: ${PORT}
+      SALT_ROUNDS: ${SALT_ROUNDS}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN}
+      PREFIX_URL: ${PREFIX_URL}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_SECRET_KEY: ${CLOUDINARY_SECRET_KEY}
+    command: sh -c "npx prisma migrate deploy && node dist/main.js"
+    restart: unless-stopped
+
   dev-db:
     image: postgres:latest
     container_name: dev-db
@@ -10,3 +32,8 @@ services:
       POSTGRES_DB: document_manager
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

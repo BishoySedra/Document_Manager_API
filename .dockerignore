@@ -1,0 +1,30 @@
+# Node modules
+node_modules
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Env files (optional: only if you inject via docker-compose env vars)
+.env
+
+# Editor folders
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output (optional if you rebuild in Docker)
+dist
+
+npm-debug.log
+Dockerfile
+docker-compose.yml
+.dockerignore
+.git
+.gitignore
+.env
+*.md

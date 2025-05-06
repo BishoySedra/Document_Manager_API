@@ -6,6 +6,7 @@ This is a **Document Manager API** built with **NestJS** and **Prisma ORM** that
 
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
+- [Steps to Run the Docker Container](#steps-to-run-the-docker-container)
 - [Features](#features)
 - [API Endpoints](#api-endpoints)
 - [User Model](#user-model)
@@ -17,6 +18,7 @@ This is a **Document Manager API** built with **NestJS** and **Prisma ORM** that
 - [File Upload & Storage](#file-upload--storage)
 - [JWT Authentication](#jwt-authentication)
 - [Testing](#testing)
+- [Final Thoughts](#final-thoughts)
 
 ---
 
@@ -79,6 +81,45 @@ CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_SECRET_KEY=your_api_secret
 ```
+
+---
+
+## Steps to Run the Docker Container
+
+1. **Update the Database URL in `.env`**:
+
+   * Replace `localhost` in the `DATABASE_URL` with `dev-db` (the container name for the PostgreSQL service provided by Docker).
+
+   ```plaintext
+   DATABASE_URL="postgresql://postgres:123@dev-db:5432/document_manager?schema=public"
+   ```
+
+2. **Run the Docker Container**:
+
+   * Use one of the following commands to start the container:
+
+     * To start the container in the background:
+
+       ```bash
+       npm run app:container:up
+       ```
+     * To restart the container (if necessary):
+
+       ```bash
+       npm run app:container:restart
+       ```
+
+3. **Revert Database URL to `localhost`**:
+
+   * After successfully running the container, revert the `DATABASE_URL` in the `.env` file to use `localhost` for listening to the database service.
+
+   ```plaintext
+   DATABASE_URL="postgresql://postgres:123@localhost:5432/document_manager?schema=public"
+   ```
+
+4. **Ensure Correct Port**:
+
+   * Verify that the `PORT` in your `.env` file is different from the port the `nest-app` container is listening to.
 
 ---
 

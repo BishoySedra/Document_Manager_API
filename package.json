@@ -6,6 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "app:container:up": "docker compose up -d --build && docker container logs nest-app",
+    "app:container:down": "docker compose down",
+    "app:container:restart": "docker compose down && docker compose up -d --build && sleep 5 && docker container logs nest-app",
     "prisma:dev:studio": "npx prisma studio",
     "prisma:dev:deploy": "npx prisma migrate deploy",
     "prisma:dev:migrate": "npx prisma migrate dev",
