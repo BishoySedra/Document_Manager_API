@@ -52,11 +52,12 @@ export class AuthService {
         });
 
         // return user without password
-        return {
+        return AppResponse.format(HttpStatus.CREATED, 'User registered successfully', {
             id: user.id,
             name: user.name,
             email: user.email,
-        };
+            role: user.role,
+        });
     }
 
     // helper method to get the right role
@@ -84,9 +85,11 @@ export class AuthService {
         const tokens = await this.generateTokens(user.id, user.email);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
-        return {
-            ...tokens
-        };
+        // return tokens
+        return AppResponse.format(HttpStatus.OK, 'User logged in successfully', {
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token,
+        });
     }
 
     // service method to get user profile
@@ -94,7 +97,9 @@ export class AuthService {
 
         // delete hashedRt from userInfo
         delete userInfo.hashedRt;
-        return userInfo;
+
+        // return user info
+        return AppResponse.format(HttpStatus.OK, 'User profile retrieved successfully', userInfo);
     }
 
     // service method to change password
@@ -108,7 +113,7 @@ export class AuthService {
 
         // if user does not exist, throw exception
         if (!user) {
-            throw new CustomException('User not found', HttpStatus.NOT_FOUND);
+            throw new CustomException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         }
 
         // compare old password
@@ -154,14 +159,10 @@ export class AuthService {
         const tokens = await this.generateTokens(user.id, user.email);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
-        return {
-            ...tokens,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
-        };
+        return AppResponse.format(HttpStatus.OK, 'User token refreshed successfully', {
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token,
+        });
     }
 
     // helper method to generate tokens

@@ -23,6 +23,7 @@ dist
 npm-debug.log
 Dockerfile
 docker-compose.yml
+Document Manager.postman_collection.json
 .dockerignore
 .git
 .gitignore

@@ -3,6 +3,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { GlobalHttpExceptionFilter } from './common/filters/http-exception.filter';
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger"
+
 
 async function bootstrap() {
   // creating instance of the app
@@ -34,6 +36,19 @@ async function bootstrap() {
 
   // setting up global filter for exception handling
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
+
+  // setting up Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('Document Manager API')
+    .setDescription('API for managing documents, folders, and users')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addSecurityRequirements('bearer')
+    .addServer(`http://localhost:${port}`)
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   // starting the app
   await app.listen(port);
