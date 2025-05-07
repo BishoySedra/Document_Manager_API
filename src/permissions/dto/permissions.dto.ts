@@ -8,6 +8,7 @@ export class PermissionDto {
     @ApiProperty({ description: 'Document ID', example: '1234567890abcdef' })
     documentId: string;
 
+
     @IsString()
     @IsNotEmpty()
     @ApiProperty({ description: 'User ID', example: '1234567890abcdef' })
