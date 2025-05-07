@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with flag --legacy-peer-deps to be able to install @nestjs/swagger
+RUN npm install --legacy-peer-deps
 
 # Copy all files to the working directory
 COPY . .
