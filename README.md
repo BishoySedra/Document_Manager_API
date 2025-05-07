@@ -323,10 +323,32 @@ The application uses a **Global Exception Filter** to catch and format all excep
 
 ## Testing
 
-- Postman collection and published documentation available:
+The API comes with built-in **Swagger UI documentation** that allows you to test all endpoints interactively. After starting the application, you can access the Swagger documentation at:
 
-  - [API Documentation](https://documenter.getpostman.com/view/32763635/2sB2cd3ctG)
-  - [Download Collection](https://github.com/BishoySedra/Document_Manager_API/blob/main/Document%20Manager.postman_collection.json)
+```
+http://localhost:3000/docs
+```
+
+### Features of Swagger Documentation:
+- **Interactive API testing**: Try out endpoints directly from your browser
+- **Authentication support**: Easily authorize using JWT tokens
+- **Request body templates**: Pre-filled request bodies for all endpoints
+- **Response examples**: See expected response formats
+- **Endpoint grouping**: Organized by functionality (Auth, Users, Documents, etc.)
+
+To use the Swagger UI:
+1. Start your application (`npm run start:dev`)
+2. Open `http://localhost:3000/docs` in your browser
+3. For protected endpoints:
+   - First authenticate via the Auth endpoints
+   - Click the "Authorize" button and enter your JWT token
+   - Now you can test all protected routes
+
+The Swagger UI provides complete documentation for:
+- All request parameters
+- Required headers
+- Possible response codes
+- Response schemas
 
 ---
 
