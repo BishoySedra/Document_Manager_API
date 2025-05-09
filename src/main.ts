@@ -54,12 +54,14 @@ async function bootstrap() {
   // starting the app
   await app.listen(port);
 
-  console.log(`Swagger is running on: http://localhost:${port}/docs`);
-  console.log(`API is running on: http://localhost:${port}${prefix}`);
+  // console.log(`Swagger is running on: http://localhost:${port}/docs`);
+  // console.log(`API is running on: http://localhost:${port}${prefix}`);
 
   // production mode
-  // console.log(`API is running on: ${process.env.APP_URL}${prefix}`);
-  // console.log(`Swagger is running on: ${process.env.APP_URL}${prefix}/docs`);
+  const protocol = process.env.PROTOCOL || 'http';
+  const app_url = process.env.APP_URL || 'localhost';
+  console.log(`Swagger is running on: ${protocol}://${app_url}:${port}/docs`);
+  console.log(`API is running on: ${protocol}://${app_url}:${port}${prefix}`);
 }
 
 // starting the app

@@ -35,7 +35,7 @@ git clone https://github.com/BishoySedra/Document_Manager_API.git
 Navigate to the project directory and run:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 ### 3. Set up your database
