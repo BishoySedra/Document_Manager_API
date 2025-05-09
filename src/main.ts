@@ -56,6 +56,10 @@ async function bootstrap() {
 
   console.log(`Swagger is running on: http://localhost:${port}/docs`);
   console.log(`API is running on: http://localhost:${port}${prefix}`);
+
+  // production mode
+  // console.log(`API is running on: ${process.env.APP_URL}${prefix}`);
+  // console.log(`Swagger is running on: ${process.env.APP_URL}${prefix}/docs`);
 }
 
 // starting the app
