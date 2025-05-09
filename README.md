@@ -1,5 +1,7 @@
 # Document Manager API
 
+**Live Swagger Docs**: 👉 [https://document-manager-api.onrender.com/docs/](https://document-manager-api.onrender.com/docs/)
+
 This is a **Document Manager API** built with **NestJS** and **Prisma ORM** that allows users to upload, manage, and organize documents. The API supports **user authentication**, **file uploads**, **folder management**, **role-based access**, and more.
 
 ## Table of Contents
