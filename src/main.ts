@@ -17,19 +17,28 @@ async function bootstrap() {
   const prefix = process.env.PREFIX_URL || '/api/v1';
   app.setGlobalPrefix(prefix);
 
-  const protocol = process.env.PROTOCOL || 'http';
+  const protocol = process.env.APP_PROTOCOL || 'http';
   const app_url = process.env.APP_URL || 'localhost';
 
   // enabling CORS
   app.enableCors({
-    origin: [
-      'https://document-manager-api.onrender.com',
-      'http://document-manager-api.onrender.com'
-    ],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        `${protocol}://${app_url}`,
+        undefined  // allow undefined for Swagger UI when loaded from same origin
+      ];
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
+
 
 
   // enabling global validation pipe
