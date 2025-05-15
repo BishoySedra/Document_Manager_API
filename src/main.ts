@@ -22,10 +22,15 @@ async function bootstrap() {
 
   // enabling CORS
   app.enableCors({
-    origin: [`${protocol}://${app_url}`, `${protocol}://${app_url}/docs`],
+    origin: [
+      'https://document-manager-api.onrender.com',
+      'http://document-manager-api.onrender.com'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    preflightContinue: false,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
+
 
   // enabling global validation pipe
   app.useGlobalPipes(
