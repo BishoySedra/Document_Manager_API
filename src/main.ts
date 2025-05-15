@@ -17,10 +17,13 @@ async function bootstrap() {
   const prefix = process.env.PREFIX_URL || '/api/v1';
   app.setGlobalPrefix(prefix);
 
+  const protocol = process.env.PROTOCOL || 'http';
+  const app_url = process.env.APP_URL || 'localhost';
+
   // enabling CORS
   app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: [`${protocol}://${app_url}`, `${protocol}://${app_url}/docs`],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     preflightContinue: false,
   });
 
@@ -38,8 +41,6 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   // setting up Swagger documentation
-  const protocol = process.env.PROTOCOL || 'http';
-  const app_url = process.env.APP_URL || 'localhost';
   const config = new DocumentBuilder()
     .setTitle('Document Manager API')
     .setDescription('API for managing documents, folders, and users')
