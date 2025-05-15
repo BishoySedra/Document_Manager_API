@@ -38,13 +38,15 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   // setting up Swagger documentation
+  const protocol = process.env.PROTOCOL || 'http';
+  const app_url = process.env.APP_URL || 'localhost';
   const config = new DocumentBuilder()
     .setTitle('Document Manager API')
     .setDescription('API for managing documents, folders, and users')
     .setVersion('1.0')
     .addBearerAuth()
     .addSecurityRequirements('bearer')
-    .addServer(`http://localhost:${port}`)
+    .addServer(`${protocol}://${app_url}`)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -58,8 +60,6 @@ async function bootstrap() {
   // console.log(`API is running on: http://localhost:${port}${prefix}`);
 
   // production mode
-  const protocol = process.env.PROTOCOL || 'http';
-  const app_url = process.env.APP_URL || 'localhost';
   console.log(`Swagger is running on: ${protocol}://${app_url}/docs`);
   console.log(`API is running on: ${protocol}://${app_url}${prefix}`);
 }
