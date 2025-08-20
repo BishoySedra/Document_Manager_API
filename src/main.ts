@@ -25,7 +25,7 @@ async function bootstrap() {
     origin: (origin, callback) => {
       const allowedOrigins = [
         `${protocol}://${app_url}`,
-        undefined  // allow undefined for Swagger UI when loaded from same origin
+        `http://localhost:${port}`,
       ];
 
       if (!origin || allowedOrigins.includes(origin)) {
@@ -62,6 +62,7 @@ async function bootstrap() {
     .addBearerAuth()
     .addSecurityRequirements('bearer')
     .addServer(`${protocol}://${app_url}`)
+    .addServer(`http://localhost:${port}`)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -71,8 +72,8 @@ async function bootstrap() {
   // starting the app
   await app.listen(port);
 
-  // console.log(`Swagger is running on: http://localhost:${port}/docs`);
-  // console.log(`API is running on: http://localhost:${port}${prefix}`);
+  console.log(`Swagger is running on: http://localhost:${port}/docs`);
+  console.log(`API is running on: http://localhost:${port}${prefix}`);
 
   // production mode
   console.log(`Swagger is running on: ${protocol}://${app_url}/docs`);
