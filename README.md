@@ -10,6 +10,7 @@ This is a **Document Manager API** built with **NestJS** and **Prisma ORM** that
 - [Environment Variables](#environment-variables)
 - [Steps to Run the Docker Container](#steps-to-run-the-docker-container)
 - [Features](#features)
+- [Professional API Design](#professional-api-design)
 - [API Endpoints](#api-endpoints)
 - [User Model](#user-model)
 - [DocumentPermission Model](#documentpermission-model)
@@ -39,6 +40,8 @@ Navigate to the project directory and run:
 ```bash
 npm install --legacy-peer-deps
 ```
+
+> **Note**: The `--legacy-peer-deps` flag is used to resolve dependency conflicts between NestJS and Swagger packages for optimal compatibility.
 
 ### 3. Set up your database
 
@@ -127,13 +130,46 @@ CLOUDINARY_SECRET_KEY=your_api_secret
 
 ## Features
 
-- **User Authentication**: Supports **JWT** authentication for users.
-- **Folder Management**: Users can create folders, organize them, and manage subfolders.
+- **User Authentication**: Supports **JWT** authentication for users with refresh token mechanisms.
+- **Folder Management**: Users can create folders, organize them, and manage hierarchical subfolder structures.
 - **File Upload**: Supports uploading of documents (PDF, DOCX, XLSX, TXT, etc.) using **Multer** and **Cloudinary**.
 - **Role-Based Access Control (RBAC)**: Allows assigning permissions to users for documents (view, edit, download). Admins can manage all users.
 - **Exception Handling**: Custom exceptions with **JSON response formatting** based on the JSend specification.
 - **JWT Refresh Tokens**: Support for refreshing JWT tokens with the refresh token mechanism.
 - **User Role Management**: Admins can view, update, and delete user profiles with role-based access.
+- **Professional API Documentation**: Comprehensive Swagger/OpenAPI documentation with detailed examples and use cases.
+- **Permission System**: Fine-grained document access control with VIEW, EDIT, and DOWNLOAD permissions.
+
+---
+
+## Professional API Design
+
+This API follows enterprise-grade design principles and industry best practices:
+
+### 🏗️ **Architecture & Standards**
+- **RESTful Design**: Clean, intuitive endpoints following REST conventions
+- **JSend Specification**: Consistent response format across all endpoints
+- **OpenAPI 3.0**: Professional API documentation with comprehensive Swagger UI
+- **TypeScript**: Full type safety and enhanced developer experience
+- **Validation**: Robust input validation using class-validator decorators
+
+### 🔐 **Security & Authentication**
+- **JWT-based Authentication**: Secure token-based authentication with refresh tokens
+- **Role-Based Access Control**: Admin and User roles with different permission levels
+- **Permission-Based Authorization**: Fine-grained document access control
+- **Input Sanitization**: Comprehensive request validation and sanitization
+
+### 📊 **Data Management**
+- **Prisma ORM**: Type-safe database operations with automatic migrations
+- **PostgreSQL**: Robust relational database with ACID compliance
+- **Cloudinary Integration**: Secure cloud-based file storage and management
+- **Hierarchical Organization**: Nested folder structures for document organization
+
+### 🚀 **Developer Experience**
+- **Interactive Documentation**: Swagger UI with live API testing capabilities
+- **Comprehensive Examples**: Realistic request/response examples with proper UUIDs
+- **Error Handling**: Detailed error responses with actionable troubleshooting information
+- **Professional Code Structure**: Clean, maintainable codebase with comprehensive documentation
 
 ---
 
@@ -332,11 +368,27 @@ http://localhost:3000/docs
 ```
 
 ### Features of Swagger Documentation:
-- **Interactive API testing**: Try out endpoints directly from your browser
-- **Authentication support**: Easily authorize using JWT tokens
-- **Request body templates**: Pre-filled request bodies for all endpoints
-- **Response examples**: See expected response formats
-- **Endpoint grouping**: Organized by functionality (Auth, Users, Documents, etc.)
+- **Interactive API testing**: Try out endpoints directly from your browser with live request/response testing
+- **Comprehensive authentication support**: Easily authorize using JWT tokens with built-in token management
+- **Professional documentation**: Detailed endpoint descriptions, use cases, and operational workflows
+- **Request body templates**: Pre-filled request bodies with realistic examples for all endpoints
+- **Response examples**: Comprehensive response formats with success and error scenarios
+- **Endpoint grouping**: Organized by functionality (Authentication, Users, Documents, Folders, Permissions)
+- **Parameter documentation**: Detailed parameter descriptions with validation rules and constraints
+- **Error handling documentation**: Complete error response schemas with troubleshooting information
+- **Permission-based documentation**: Clear documentation of required permissions for each operation
+
+### Enhanced API Documentation Features:
+- **JSend Specification Compliance**: All responses follow consistent JSend format for predictable API behavior
+- **Detailed Operation Descriptions**: Each endpoint includes comprehensive descriptions with:
+  - Step-by-step operation workflows
+  - Authorization requirements and permission levels  
+  - Validation rules and constraints
+  - Use cases and practical examples
+  - Security considerations
+- **Professional Examples**: Realistic request/response examples using proper UUIDs and meaningful data
+- **Hierarchical Organization**: Clear documentation of folder structures and document relationships
+- **Permission System Documentation**: Comprehensive access control documentation with permission hierarchies
 
 To use the Swagger UI:
 1. Start your application (`npm run start:dev`)
@@ -356,5 +408,21 @@ The Swagger UI provides complete documentation for:
 
 ### Final Thoughts
 
-This API is designed to allow document management with a focus on user access control, file storage, and validation. It also includes JWT authentication and refresh tokens for secure user sessions.
+This API represents a **professional-grade document management solution** built with enterprise standards and best practices. It combines the power of **NestJS**, **Prisma ORM**, and **TypeScript** to deliver a robust, scalable, and maintainable system.
+
+#### 🎯 **Key Strengths**
+- **Enterprise Architecture**: Professional codebase structure with comprehensive documentation
+- **Security-First Design**: Multi-layered security with JWT authentication and fine-grained permissions
+- **Developer-Friendly**: Extensive Swagger documentation with interactive testing capabilities
+- **Scalable Foundation**: Built for growth with modular architecture and type safety
+- **Industry Standards**: Follows REST conventions, JSend specification, and OpenAPI standards
+
+#### 🚀 **Perfect For**
+- Document management systems requiring secure access control
+- Team collaboration platforms with file sharing capabilities
+- Enterprise applications needing hierarchical document organization
+- Projects requiring professional API documentation and developer experience
+- Systems that need to scale with comprehensive permission management
+
+The API is designed to provide a solid foundation for document management with a focus on **user access control**, **secure file storage**, **professional documentation**, and **maintainable code architecture**. With its comprehensive JWT authentication system, refresh token mechanisms, and fine-grained permission controls, it's ready for production use in enterprise environments.
 
