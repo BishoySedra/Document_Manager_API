@@ -16,7 +16,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('Folders')  // Groups all folder endpoints under 'Folders' in Swagger UI
-@ApiBearerAuth()  // Indicates all endpoints require Bearer token authentication
+@ApiBearerAuth('JWT-auth')  // Indicates all endpoints require Bearer token authentication
 @UseGuards(JwtGuard)
 @Controller('folders')
 export class FoldersController {

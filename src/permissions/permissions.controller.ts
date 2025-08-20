@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('Permissions')  // Groups all permission endpoints under 'Permissions' in Swagger UI
-@ApiBearerAuth()  // Indicates all endpoints require Bearer token authentication
+@ApiBearerAuth('JWT-auth')  // Indicates all endpoints require Bearer token authentication
 @UseGuards(JwtGuard)
 @Controller('permissions')
 export class PermissionsController {

@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('Documents')  // Groups all document endpoints under 'Documents' in Swagger UI
-@ApiBearerAuth()  // Indicates all endpoints require Bearer token authentication
+@ApiBearerAuth('JWT-auth')  // Indicates all endpoints require Bearer token authentication
 @UseGuards(JwtGuard)
 @Controller('documents')
 export class DocumentsController {
